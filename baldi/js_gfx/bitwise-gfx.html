@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+<style>
+body, canvas {padding:0; margin:0;}
+#canvas {border: 0;}
+</style>
+<script type="text/javascript" language="javascript">
+   
+var canvas, width, height, ctx, size = 1024;
+var cx, cy;
+var pi = Math.PI, sin = Math.sin, cos = Math.cos, fok = pi/180;
+
+function init() {
+    canvas = document.getElementById("canvas");
+    ctx = canvas.getContext('2d');
+}
+    
+function calibrate() {
+    ctx.canvas.width = width = size;
+    ctx.canvas.height = height = size;
+    cx = width / 2;
+    cy = height / 2;
+}
+    
+function draw() {
+    bitGraphics();
+}
+
+function rgb(n) {
+    var r,g,b;
+    r = (Math.sin((n + 0) * 0.3 * fok) + 1) * 127;
+    g = (Math.sin((n + 45) * 1.0 * fok) + 1) * 127;
+    b = (Math.sin((n + 180) * 0.7 * fok) + 1) * 127;
+    return [r, g, b];
+}
+
+function bitGraphics() {
+    var i, j, color;
+    for (i = 0; i < size; i++){
+        for (j = 0; j < size; j++){
+            ctx.beginPath();
+            color = rgb(i & j);
+            ctx.strokeStyle = "rgb(" + color[0] + ", " + color[1] + ", " + color[2] + ")";
+            ctx.rect(i, j, 1, 1);
+            ctx.stroke();
+        }
+    }
+}
+
+   
+</script>
+</head>
+<body onload="init(); calibrate(); draw();" onresize="calibrate(); draw();"
+    id="frame"><canvas id="canvas"></canvas></body>
+</html>
+

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" language="javascript">
+var width, height;
+const topx=-2, topy=-1.3, sizex=2.6, sizey=2.6;
+//const topx=-0.75, topy=-0.75, sizex=0.4, sizey=0.4;
+const pixelsize = 1;
+var pixelwidth;
+var canvas;
+var ctx
+const iterlimit = 256;
+var x, y;
+
+function init() {
+    canvas = document.getElementById('komplex');
+    ctx = canvas.getContext('2d');
+    canvas.addEventListener("click", katt);
+}
+
+function calibrate() {
+    canvas.width = canvas.height =
+    width = height =
+    Math.min(window.innerWidth-5, window.innerHeight-5);
+    pixelwidth = sizex / width;
+}
+
+function toComplex(x, y) {
+  var retr, reti;
+  retr = topx + x * sizex / width;
+  reti = topy + y * sizey / height;
+  return [retr, reti];
+}
+
+function complexMulti(q,w) {
+  return [q[0]*w[0]-q[1]*w[1], q[0]*w[1]+q[1]*w[0]];
+}
+
+function complexAdd(q, w) {
+  return [q[0]+w[0], q[1]+w[1]];
+}
+
+function mandelbrot(c, draw) {
+  var coords, gyok2p2 = Math.sqrt(2)/2, c45 = [gyok2p2, gyok2p2];
+  if (draw) {
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.strokeStyle = "blue";
+      coords = complexToCoords(c);
+      ctx.arc(coords[0], coords[1], 2, 0, 2 * Math.PI, false);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.strokeStyle = "rgb(0,255,0)";
+      ctx.moveTo(coords[0], coords[1]);
+  }
+  var atfogo, n = 0, z = c;
+  atfogo = Math.sqrt(c[0]**2 + c[1]**2);
+  while (atfogo < 100 && n <= iterlimit) {
+    z = complexAdd(complexMulti(z, z), c);
+    if (draw) {
+        coords = complexToCoords(z);
+        ctx.lineTo(coords[0], coords[1]);
+        ctx.stroke();
+        ctx.strokeStyle = "blue";
+        ctx.arc(coords[0], coords[1], 2, 0, 2 * Math.PI, false);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.strokeStyle = "rgb(0,255,0)";
+        ctx.moveTo(coords[0], coords[1]);
+    }
+    atfogo = Math.sqrt(z[0]**2 + z[1]**2);
+    n++;
+  }
+  if (draw) {
+      coords = complexToCoords(z);
+      ctx.lineTo(coords[0], coords[1]);
+      ctx.stroke();
+      ctx.strokeStyle = "red";
+      ctx.arc(coords[0], coords[1], 2, 0, 2 * Math.PI, false);
+      ctx.stroke();
+  }
+  return n;
+}
+
+function colorN(n) {
+  return "rgb("+n+","+(255-n)+","+(255-n)+")";
+}
+
+function draw() {
+    var c, atfogo, mandel;
+    for (x = 0; x < width; x += pixelsize) {
+      for (y = 0; y < height; y += pixelsize) {
+        c = toComplex(x,y);
+        mandel = mandelbrot(c);
+        ctx.fillStyle = colorN(mandel);
+        ctx.fillRect(x, y, pixelsize, pixelsize);
+      }
+    }
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 1;
+    var origo = complexToCoords([0,0]);
+    ctx.beginPath();
+    ctx.arc(origo[0], origo[1], 1/pixelwidth, 0, 2 * Math.PI, false);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(origo[0], origo[1], 2/pixelwidth, 0, 2 * Math.PI, false);
+    ctx.stroke();
+}
+
+function coordsToComplex(xy) {
+    return [topx + xy[0] * pixelwidth, topy + xy[1] * pixelwidth];
+}
+            
+function complexToCoords(c) {
+    return [(c[0] - topx) / pixelwidth, (c[1] - topy) / pixelwidth];
+}
+            
+function katt(e) {
+    ctx.beginPath();
+    ctx.strokeStyle = "black";
+    var x = e.layerX-2;
+    var y = e.layerY-3;
+    ctx.rect(x, y, 1, 1);
+    ctx.stroke();
+    var c = coordsToComplex([x, y]);
+    var m = mandelbrot(c, true);
+}
+    
+</script>
+<style>
+body, #komplex {border: 0; margin:0}
+</style>
+</head>
+<body onload="init(); calibrate(); draw();" onresize="calibrate(); draw();">
+<canvas width="800" height="800" id="komplex"></canvas>
+</body>
+</html>

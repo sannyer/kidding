@@ -1,0 +1,59 @@
+<html>
+<head>
+<script language="javascript">
+var a = [3,248,48,245286,93569382452,745,2,675,364,63,568,4]; //12 elem
+var b = [6,43,2,4,56,345,7,6,245,44,4,4,245,74,274,5,9,6,5,8,7,2425,4282];
+
+function minSort(arr) {
+  var i, j, minPos, minVal, x;
+  for (i = 0; i < arr.length - 1; i++){
+    minPos = i;
+    minVal = arr[i];
+    for (j = i + 1; j < arr.length; j++){
+      if (arr[j] < minVal) {
+        minPos = j;
+        minVal = arr[j];
+      }      
+    }
+    if (minPos != i) {
+      x = arr[i];
+      arr[i] = minVal;
+      arr[minPos] = x;
+    }
+  }
+  return arr;
+}
+
+function mergeSorted(arrA, arrB) {
+  var i = 0, j = 0, arrC = [];
+  while (i < arrA.length || j < arrB.length){
+    if (j >= arrB.length){
+      arrC.push(arrA[i++]);
+      continue;
+    }
+    if (i >= arrA.length){
+      arrC.push(arrB[j++]);
+      continue;
+    }
+    if (arrA[i] < arrB[j]){
+      arrC.push(arrA[i++]);
+    } else {
+      arrC.push(arrB[j++]);
+    }
+  }
+  return arrC;
+}
+
+a = minSort(a);
+b = minSort(b);
+
+console.log(a);
+console.log(b);
+
+console.log(mergeSorted(a,b));
+
+</script>
+</head>
+<body>
+</body>
+</html>

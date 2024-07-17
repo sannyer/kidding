@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+<style>
+body, canvas {padding:0; margin:0;}
+#canvas {border: 1px dashed blue;}
+</style>
+<script type="text/javascript" language="javascript">
+   
+var canvas, width, height, ctx, size = 1000;
+var cx, cy;
+var pi = Math.PI, sin = Math.sin, cos = Math.cos, fok = pi/180;
+var controlPoints = [];
+
+function init() {
+    canvas = document.getElementById("canvas");
+    ctx = canvas.getContext('2d');
+    canvas.addEventListener("click", handleClick, {});
+}
+    
+function calibrate() {
+    ctx.canvas.width = width = size;
+    ctx.canvas.height = height = size;
+    cx = width / 2;
+    cy = height / 2;
+}
+    
+function draw() {
+    bezier(controlPoints);
+}
+
+function rgb(n) {
+    var r,g,b;
+    r = (Math.sin((n + 0) * 0.3 * fok) + 1) * 127;
+    g = (Math.sin((n + 45) * 1.0 * fok) + 1) * 127;
+    b = (Math.sin((n + 180) * 0.7 * fok) + 1) * 127;
+    return [r, g, b];
+}
+
+/**
+ * param f float 0.0 ... 1.0
+ * */
+function getBezierPoint(f, points) {
+    if (points.length == 1) {
+        return points[0];
+    } else if (points.length > 1) {
+        var _points = [], f_ = 1 - f, p1, p2, interPoint;
+        for (var i = 0; i < points.length - 1; i++) {
+            p1 = points[i];
+            p2 = points[i + 1];
+            interPoint = {"x":(f_ * p1.x + f * p2.x), "y":(f_ * p1.y + f * p2.y)};
+            _points.push(interPoint);
+        }
+        return getBezierPoint(f, _points);
+    }
+}
+
+function bezier(points) {
+    if (points.length < 1) return;
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+    var f, p;
+    for (f = 0; f <= 1; f += 0.01) {
+        p = getBezierPoint(f, points);
+        ctx.lineTo(p.x, p.y);
+        ctx.moveTo(p.x, p.y);
+    }
+    var lastPoint = points[points.length-1];
+    ctx.lineTo(lastPoint.x, lastPoint.y);
+    ctx.strokeStyle = "red";
+    ctx.stroke();
+    ctx.closePath();
+}
+
+function drawControlPoint(x, y, style = "blue") {
+    ctx.strokeStyle = "blue";
+    ctx.beginPath();
+    ctx.arc(x, y, 5, 0, 2 * pi);
+    ctx.stroke();
+    ctx.closePath();
+}
+
+function handleClick(e) {
+    var x = e.layerX, y = e.layerY;
+    if (e.altKey) {
+        bezier(controlPoints);
+        controlPoints = [];
+    } else {
+        controlPoints.push({"x":x, "y":y});
+        drawControlPoint(x, y);
+        console.log(controlPoints);
+    }
+}
+
+</script>
+</head>
+<body onload="init(); calibrate(); draw();" id="frame">
+    <canvas id="canvas"></canvas>
+</body>
+</html>
+

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+<style>
+body, canvas {padding:0; margin:0;}
+#canvas1, #canvas2 {border: 0;}
+</style>
+<script type="text/javascript" language="javascript">
+    
+var canvas, canvas1, canvas2;
+var showing, drawing;
+var width, height;
+var ctx, ctx1, ctx2;
+var topx=-0.7, topy=-0.7, sizex=0.4, sizey=0.4;
+const pixelsize = 1, iterlimit = 256;
+
+function init() {
+    canvas1 = document.getElementById("canvas1");
+    canvas2 = document.getElementById("canvas2");
+    ctx1 = canvas1.getContext('2d');
+    ctx2 = canvas2.getContext('2d');
+    showing = 1;
+    swap();
+}
+    
+function calibrate() {
+    ctx1.canvas.width = width = window.innerWidth;
+    ctx2.canvas.width = width = window.innerWidth;
+    ctx1.canvas.height = height = window.innerHeight;
+    ctx2.canvas.height = height = window.innerHeight;
+}
+    
+function draw() {
+    drawClock();
+    swap();
+}
+
+function swap() {
+    if (showing == 1) {
+        showing = 2;
+        drawing = 1;
+        ctx = ctx2;
+        canvas = canvas2;
+        canvas1.style.display = "none";
+        canvas2.style.display = "block";
+    } else {
+        showing = 1;
+        drawing = 2;
+        ctx = ctx1;
+        canvas = canvas1;
+        canvas2.style.display = "none";
+        canvas1.style.display = "block";
+    }
+}
+    
+function drawClock() {
+    var i, x1, y1, x2, y2, r, alfa;
+    var cx = width/2, cy = height/2;
+    var time = new Date(),
+      seconds = time.getHours() * 3600 +
+      time.getMinutes() * 60 +
+      time.getSeconds() +
+      time.getMilliseconds() / 1000;
+    var secFok, fok = Math.PI / 180;
+    secFok = seconds * 6 * fok;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // dial hours
+    ctx.strokeStyle = "darkgrey";
+    ctx.lineWidth = 2;
+    r = height / 2;
+    for (i = 0; i < 12; i++) {
+        alfa = 90 * fok - i * 30 * fok;
+        x1 = cx + r * Math.cos(alfa) * 0.8;
+        y1 = cy - r * Math.sin(alfa) * 0.8;
+        x2 = cx + r * Math.cos(alfa) * 0.98;
+        y2 = cy - r * Math.sin(alfa) * 0.98;
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+    }
+    // dial minutes
+    ctx.strokeStyle = "darkgrey";
+    ctx.lineWidth = 1;
+    ctx.fillStyle = "red";
+    r = height / 2;
+    for (i = 0; i < 60; i++) {
+        alfa = 90 * fok - i * 6 * fok;
+        x1 = cx + r * Math.cos(alfa) * 0.9;
+        y1 = cy - r * Math.sin(alfa) * 0.9;
+        x2 = cx + r * Math.cos(alfa) * 0.98;
+        y2 = cy - r * Math.sin(alfa) * 0.98;
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+    }
+
+    // hour finger
+    alfa = 90 * fok - secFok / 3600;
+    r = Math.min(height, width) * 0.25;
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 15;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    x2 = cx + r * Math.cos(alfa);
+    y2 = cy - r * Math.sin(alfa);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+
+    // minute finger
+    alfa = 90 * fok - secFok / 60;
+    r = Math.min(height, width) * 0.35;
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    x2 = cx + r * Math.cos(alfa);
+    y2 = cy - r * Math.sin(alfa);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+
+    // second finger
+    alfa = 90 * fok - secFok;
+    r = Math.min(height, width) * 0.35;
+    ctx.strokeStyle = "red";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    x1 = cx - r/5 * Math.cos(alfa);
+    y1 = cy + r/5 * Math.sin(alfa);
+    ctx.moveTo(x1, y1);
+    x2 = cx + r * Math.cos(alfa);
+    y2 = cy - r * Math.sin(alfa);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+    
+    ctx.beginPath();
+    ctx.arc(x1, y1, r/30, 0, 2 * Math.PI, false);
+    ctx.lineWidth = 1;
+    ctx.fill();
+    ctx.stroke();
+
+}
+
+function setTimer() {
+    window.setInterval("draw();", 30);
+}
+    
+</script>
+</head>
+<body onload="init(); calibrate(); setTimer();" onresize="calibrate();">
+<canvas id="canvas1"></canvas>
+<canvas id="canvas2"></canvas>
+</body>
+</html>
+
+
+
+
+
+
+

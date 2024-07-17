@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+<style>
+body, canvas {padding:0; margin:0;}
+#canvas {border: 0;}
+</style>
+<script type="text/javascript" language="javascript">
+    
+const pixelsize = 1;
+var canvas, width, height, ctx, iterlimit = 256, offset = 0;
+var topx=-0.7, topy=-0.7, sizex=0.4, sizey=0.4;
+var cx, cy;
+var pi = Math.PI, sin = Math.sin, cos = Math.cos, fok = pi/180;
+var i = 0;
+
+function init() {
+    canvas = document.getElementById("canvas");
+    ctx = canvas.getContext('2d');
+}
+    
+function calibrate() {
+    ctx.canvas.width = width = window.innerWidth;
+    ctx.canvas.height = height = window.innerHeight;
+    cx = width / 2;
+    cy = height / 2;
+}
+    
+function draw() {
+    cikkcakk();
+    i ++;
+}
+
+function cikkcakk() {
+    var x, y;
+    ctx.strokeStyle = "blue";
+    x = cx + 300 * cos(pi * i * fok);
+    y = cy + 300 * sin(Math.sqrt(10) * i * fok);
+    ctx.beginPath();
+    ctx.rect(x, y, 1, 1);
+    ctx.stroke();
+}
+
+function setTimer() {
+    window.setInterval("draw();", 1);
+}
+    
+</script>
+</head>
+<body onload="init(); calibrate(); setTimer();" onresize="calibrate();"
+    id="frame"><canvas id="canvas"></canvas></body>
+</html>
+
+
+
+
+
+
+

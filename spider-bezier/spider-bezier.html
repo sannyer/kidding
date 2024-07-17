@@ -1,0 +1,59 @@
+<html>
+<head></head>
+<body>
+<canvas id="canvas_element" width="1400" height="700" style="border:1px solid black">
+</canvas>
+<script language="javascript">
+const canvas = document.getElementById("canvas_element");
+const ctx = canvas.getContext("2d");
+const width = 1400;
+const height = 700;
+const centerX = Math.floor(width/2);
+const centerY = Math.floor(height/2);
+
+// Set line width
+ctx.lineWidth = 1;
+function line(x1,y1,x2,y2){
+    ctx.moveTo(x1,y1);
+    ctx.lineTo(x2,y2);
+}
+
+var i, sq2 = Math.sqrt(0.5),
+    loop = 30,
+    step = 10,
+    step2 = step * sq2,
+    reach = step * loop,
+    reach2 = reach * sq2;
+for (i = 0; i <= loop; i++) {
+    //center star
+    //bottom right
+    line(centerX + i * step, centerY, centerX + reach2 - i * step2, centerY + reach2 - i * step2);
+    line(centerX, centerY + i * step, centerX + reach2 - i * step2, centerY + reach2 - i * step2);
+
+    //top right
+    line(centerX + i * step, centerY, centerX + reach2 - i * step2, centerY - reach2 + i * step2);
+    line(centerX, centerY - i * step, centerX + reach2 - i * step2, centerY - reach2 + i * step2);
+
+    //bottom left
+    line(centerX - i * step, centerY, centerX - reach2 + i * step2, centerY + reach2 - i * step2);
+    line(centerX, centerY + i * step, centerX - reach2 + i * step2, centerY + reach2 - i * step2);
+
+    //top left
+    line(centerX - i * step, centerY, centerX - reach2 + i * step2, centerY - reach2 + i * step2);
+    line(centerX, centerY - i * step, centerX - reach2 + i * step2, centerY - reach2 + i * step2);
+
+    //corners
+    //top left
+    line(i * width / 2 / loop , 0, 0, centerY - i * height / 2 / loop);
+    //bottom left
+    line(i * width / 2 / loop , height, 0, centerY + i * height / 2 / loop);
+    //top right
+    line(width - i * width / 2 / loop , 0, width, centerY - i * height / 2 / loop);
+    //bottom right
+    line(width - i * width / 2 / loop , height, width, centerY + i * height / 2 / loop);
+}
+ctx.stroke();
+
+</script>
+</body>
+</html>

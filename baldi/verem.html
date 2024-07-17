@@ -1,0 +1,89 @@
+<html>
+<head>
+<script language="javascript">
+var stack = []; //12 elem
+
+function pushStack(x) {
+  stack[stack.length] = x;
+}
+
+function popStack() {
+  var x;
+  if (stack.length == 0){
+    return null;
+  } else {
+    x = stack[stack.length - 1];
+    stack.splice(stack.length - 1, 1);
+    return x;
+  }
+}
+
+function unshiftStack(x){
+  var i;
+  for (i = stack.length; i > 0; i--){
+    stack[i] = stack[i-1];
+  }
+  stack[0] = x; 
+}
+
+
+function shiftStack(){
+  if (stack.length == 0) return null;
+  var i, ret = stack[0];
+  for (i = 0; i < stack.length - 1; i++){
+    stack[i] = stack[i+1];
+  }
+  stack.splice(stack.length-1);
+  return ret;
+}
+
+console.log(stack);
+
+pushStack(5);
+console.log(stack);
+
+pushStack(6);
+console.log(stack);
+
+pushStack(10);
+console.log(stack);
+
+pushStack(10);
+console.log(stack);
+
+console.log(popStack());
+console.log(stack);
+
+
+console.log(popStack());
+console.log(stack);
+console.log(popStack());
+console.log(stack);
+console.log(popStack());
+console.log(stack);
+console.log(popStack());
+console.log(stack);
+
+unshiftStack(1);
+console.log(stack);
+unshiftStack(2);
+console.log(stack);
+unshiftStack(3);
+console.log(stack);
+unshiftStack(4);
+console.log(stack);
+unshiftStack(5);
+console.log(stack);
+
+console.log(shiftStack(), stack);
+console.log(shiftStack(), stack);
+console.log(shiftStack(), stack);
+console.log(shiftStack(), stack);
+console.log(shiftStack(), stack);
+console.log(shiftStack(), stack);
+
+</script>
+</head>
+<body>
+</body>
+</html>

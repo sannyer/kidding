@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+<style>
+body, canvas {padding:0; margin:0;}
+#canvas {border: 1px dashed blue;}
+#colorpicker span {width:30px; height: 30px; border:1px solid grey; display: inline-block;}
+#colorpicker {width: 10rem}
+.selected {border: 2px solid red !important;}
+</style>
+<script type="text/javascript" language="javascript">
+   
+var canvas, width = 1000, height = 600, ctx;
+var cx, cy;
+var pi = Math.PI, sin = Math.sin, cos = Math.cos, fok = pi/180;
+var controlPoints = [];
+var activeTool = "Pen", toolSize = 3, color = "black";
+var pos, prevPos;
+
+function init() {
+    canvas = document.getElementById("canvas");
+    ctx = canvas.getContext('2d');
+    canvas.addEventListener("click", canvasClick, {});
+    canvas.addEventListener("mousedown", canvasMouseDown, {});
+    canvas.addEventListener("mouseup", canvasMouseUp, {});
+    canvas.addEventListener("mouseover", canvasMouseOver, {});
+    canvas.addEventListener("mousemove", canvasMouseMove, {});
+    document.getElementById("colorpicker").addEventListener("click", colorPickerClick, {});
+    Array.from(document.getElementsByClassName("default")).forEach(element => {
+        element.click();
+    });
+}
+    
+function calibrate() {
+    ctx.canvas.width = width;
+    ctx.canvas.height = height;
+    cx = width / 2;
+    cy = height / 2;
+}
+    
+function rgb(n) {
+    var r,g,b;
+    r = (Math.sin((n + 0) * 0.3 * fok) + 1) * 127;
+    g = (Math.sin((n + 45) * 1.0 * fok) + 1) * 127;
+    b = (Math.sin((n + 180) * 0.7 * fok) + 1) * 127;
+    return [r, g, b];
+}
+
+/**
+ * param f float 0.0 ... 1.0
+ * */
+function getBezierPoint(f, points) {
+    if (points.length == 1) {
+        return points[0];
+    } else if (points.length > 1) {
+        var _points = [], f_ = 1 - f, p1, p2, interPoint;
+        for (var i = 0; i < points.length - 1; i++) {
+            p1 = points[i];
+            p2 = points[i + 1];
+            interPoint = {"x":(f_ * p1.x + f * p2.x), "y":(f_ * p1.y + f * p2.y)};
+            _points.push(interPoint);
+        }
+        return getBezierPoint(f, _points);
+    }
+}
+
+function bezier(points) {
+    if (points.length < 1) return;
+    ctx.lineWidth = (toolSize - 1) * 3 + 1;
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+    var f, p;
+    for (f = 0; f <= 1; f += 0.01) {
+        p = getBezierPoint(f, points);
+        ctx.lineTo(p.x, p.y);
+        ctx.moveTo(p.x, p.y);
+    }
+    var lastPoint = points[points.length-1];
+    ctx.lineTo(lastPoint.x, lastPoint.y);
+    ctx.strokeStyle = color;
+    ctx.stroke();
+    ctx.closePath();
+}
+
+function drawControlPoint(x, y, style = "blue") {
+    ctx.strokeStyle = "blue";
+    ctx.lineWidth = 1;
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.arc(x, y, 5, 0, 2 * pi);
+    ctx.stroke();
+    ctx.closePath();
+}
+
+function setTool(value) {
+    activeTool = value;
+    console.log(activeTool);
+}
+
+function canvasClick(e) {
+    var x = e.layerX, y = e.layerY;
+    switch (activeTool) {
+    case "Bezier":
+        if (e.altKey) {
+            bezier(controlPoints);
+            controlPoints = [];
+        } else {
+            controlPoints.push({"x":x, "y":y});
+            drawControlPoint(x, y);
+            console.log(controlPoints);
+        }
+        break;
+    }
+}
+
+function drawBrush(e) {
+    if (e.buttons != 1)
+        return;
+    ctx.strokeStyle = color;
+    ctx.beginPath();
+    ctx.arc(pos.x, pos.y, toolSize * 3, 0, 2 * pi);
+    ctx.fill();
+    ctx.closePath();
+}
+
+function drawPen(e) {
+    if (e.buttons != 1 || pos === null || prevPos === null)
+        return;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = (toolSize - 1) * 3 + 1;
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(prevPos.x, prevPos.y);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.closePath();
+    ctx.stroke();
+}
+
+function canvasMouseDown(e) {
+    switch (activeTool) {
+    case "Brush":
+        drawBrush(e);
+        break;
+        case "Pen":
+        drawPen(e);
+    case "Bezier":
+        break;
+    }
+}
+
+function canvasMouseUp(e) {
+    pos = null;
+    switch (activeTool) {
+    case "Brush":
+        drawBrush(e);
+        break;
+        case "Pen":
+        drawPen(e);
+    case "Bezier":
+        break;
+    }
+}
+
+function canvasMouseOver(e) {
+    prevPos = pos;
+    pos = {x:e.layerX, y:e.layerY};
+    switch (activeTool) {
+        case "Brush":
+        drawBrush(e);
+        break;
+        case "Pen":
+        drawPen(e);
+        break;
+    case "Bezier":
+        break;
+    }
+}
+
+canvasMouseMove = canvasMouseOver;
+
+function onMouseLeave(e) {
+    pos = null;
+    prevPos = null;
+}
+
+function colorPickerClick(e) {
+    Array.from(document.getElementById("colorpicker").getElementsByTagName("span")).forEach(node => {
+        if (node === e.target) {
+            node.classList.add("selected");
+            color = node.getAttribute("title");
+        } else {
+            node.classList.remove("selected");
+        }
+    });
+}
+
+function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+</script>
+</head>
+<body onload="init(); calibrate();" id="frame">
+
+<table cellpadding=0 cellspacing=5 border=0><tr>
+    <td><canvas id="canvas"></canvas></td>
+    <td valign=top>
+        <form id="toolbarForm" onsubmit="return false" target="" method="get">
+        <table cellpadding=2 cellspacing=0 border=0>
+            <tr><th colspan=2>Tools</th></tr>
+            <tr>
+                <td colspan="2"><input type="radio" name="toolSelection" id="radioBrush" value="Brush" onchange="setTool(this.value)"/>
+                <label for="radioBrush">Brush</label>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><input type="radio" name="toolSelection" id="radioPen" value="Pen" class="default" onchange="setTool(this.value)"/>
+                <label for="radioPen">Pen</label>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><input type="radio" name="toolSelection" id="radioBezier" value="Bezier" onchange="setTool(this.value)"/>
+                <label for="radioBezier">Bezier</label>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="size">Tool size</label>
+                </td><td>
+                <select id="size" name="size" onchange="toolSize = this.value">
+                    <option value=1>lil</option>
+                    <option value=2>meejum</option>
+                    <option value=3 selected="selected" class="default">hi</option>
+                </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                <div id="colorpicker">
+                    <span style="background-color:white" title="white"></span>
+                    <span style="background-color:grey" title="grey"></span>
+                    <span style="background-color:black" title="black"></span>
+                    <span style="background-color:red" title="red"></span>
+                    <span style="background-color:blue" title="blue" class="default"></span>
+                    <span style="background-color:green" title="green"></span>
+                    <span style="background-color:yellow" title="yellow"></span>
+                    <span style="background-color:purple" title="purple"></span>
+                    <span style="background-color:orange" title="orange"></span>
+                    <span style="background-color:brown" title="brown"></span>
+                    <span style="background-color:darkgray" title="darkgray"></span>
+                    <span style="background-color:fuchsia" title="fuchsia"></span>
+                    <span style="background-color:tan" title="tan"></span>
+                    <span style="background-color:lightgreen" title="lightgreen"></span>
+                    <span style="background-color:lightblue" title="lightblue"></span>
+                    <span style="background-color:pink" title="pink"></span>
+                    <span style="background-color:lightgray" title="lightgray"></span>
+                    <span style="background-color:burlywood" title="burlywood"></span>
+                    <span style="background-color:lemonchiffon" title="lemonchiffon"></span>
+                    <span style="background-color:lime" title="lime"></span>
+                    <span style="background-color:cyan" title="cyan"></span>
+                    <span style="background-color:paleturquoise" title="paleturquoise"></span>
+                    <span style="background-color:lightcoral" title="lightcoral"></span>
+                </div></td>
+            </tr>
+            <tr><td colspan=2><input type="button" value="Clear" onclick="clearCanvas()"/></td></tr>
+        </table>
+        </form>
+    </td>
+<table>
+</body>
+</html>
+

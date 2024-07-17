@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="calcsytle.css">
+    <title>Document</title>
+    <script src="calcjs.js"></script>
+</head>
+<body onload="init()">
+    <div id="_1">
+    <div id="display"></div>    
+        <table id="tabla">
+    <tr>
+        <td><div id="g1" class="gomb" onclick="append('1')">1</div></td>
+        <td><div id="g2" class="gomb" onclick="append('2')">2</div></td>
+        <td><div id="g3" class="gomb" onclick="append('3')">3</div></td>
+        <td><div id="g4" class="gomb" onclick="gc()">C</div></td>
+    </tr>
+    <tr>    
+        <td><div id="g5" class="gomb" onclick="append('4')">4</div></td>
+        <td><div id="g6" class="gomb" onclick="append('5')">5</div></td>
+        <td><div id="g7" class="gomb" onclick="append('6')">6</div></td>
+        <td><div id="g8" class="gomb" onclick="append('+')">+</div></td>
+    </tr>
+    <tr>    
+        <td><div id="g9" class="gomb" onclick="append('7')">7</div></td>
+        <td><div id="g10" class="gomb" onclick="append('8')">8</div></td>
+        <td><div id="g11" class="gomb" onclick="append('9')">9</div></td>
+        <td><div id="g12" class="gomb" onclick="append('-')">-</div></td>
+    </tr>
+    <tr>
+        <td><div id="g13" class="gomb" onclick="append('0')">0</div></td>
+        <td><div id="g17" class="gomb" onclick="append('(')">(</div></td>
+        <td><div id="g18" class="gomb" onclick="append(')')">)</div></td>
+        <td><div id="g14" class="gomb" onclick="append('×', '*')">×</div></td>
+
+    </tr>
+    <tr>
+        <td><div id="g17" class="gomb" onclick="append('√(', 'Math.sqrt(')">√</div></td>
+        <td><div id="g18" class="gomb" onclick="append('²', '**2')">x²</div></td>
+        <td><div id="g15" class="gomb" onclick="append('÷', '/')">÷</div></td>
+        <td><div id="g16" class="gomb" onclick="ggyn()">=</div></td>
+
+    </tr>
+    </table>
+    </div>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<html>
+<head>
+<style>
+#komplex {border: 1px solid black;}
+</style>
+</head>
+<body>
+<canvas width="512" height="512" id="komplex"></canvas>
+<script type="text/javascript" language="javascript">
+const width=512, height=512;
+const topx=-2, topy=-2, sizex=4, sizey=4;
+const pixelsize = 1;
+const canvas = document.getElementById('komplex');
+const ctx = canvas.getContext('2d');
+var x, y;
+function toComplex(x, y) {
+  var retr, reti;
+  retr = topx + x * sizex / width;
+  reti = topy + y * sizey / height;
+  return [retr, reti];
+}
+var c, atfogo;
+for (x = 0; x < width; x += pixelsize) {
+  for (y = 0; y < height; y += pixelsize) {
+    c = toComplex(x,y);
+//    console.log(c);
+    atfogo = Math.sqrt(c[0]**2+c[1]**2);
+    ctx.fillStyle = atfogo < 1 ? "white" : "black";
+    ctx.fillRect(x, y, pixelsize, pixelsize);
+  }
+}
+
+</script>
+</body>
+</html>

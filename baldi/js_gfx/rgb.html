@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+<style>
+body, canvas {padding:0; margin:0;}
+#canvas {border: 0;}
+</style>
+<script type="text/javascript" language="javascript">
+   
+var canvas, width, height, ctx;
+var cx, cy;
+var pi = Math.PI, sin = Math.sin, cos = Math.cos, fok = pi/180;
+
+function init() {
+    canvas = document.getElementById("canvas");
+    ctx = canvas.getContext('2d');
+}
+    
+function calibrate() {
+    ctx.canvas.width = width = window.innerWidth-1;
+    ctx.canvas.height = height = window.innerHeight-1;
+    cx = width / 2;
+    cy = height / 2;
+}
+    
+function draw() {
+    rgbHatter();
+}
+
+function rgb(n) {
+    var r,g,b;
+    r = (sin((n + 0) * 0.3 * fok) + 1) * 127;
+    g = (sin((n + 45) * 1.0 * fok) + 1) * 127;
+    b = (sin((n + 180) * 0.7 * fok) + 1) * 127;
+    return [r, g, b];
+}
+
+function rgbHatter() {
+    var i, color;
+    for (i = 0; i < width; i++) {
+        color = rgb(i);
+        console.log(color);
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.strokeStyle = "rgb("+color[0]+","+color[1]+","+color[2]+")";
+        ctx.lineTo(i, 255);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.strokeStyle = "rgb(255,0,0)";
+        ctx.rect(i, 256-color[0],1,1);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.strokeStyle = "rgb(0,255,0)";
+        ctx.rect(i, 256-color[1],1,1);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.strokeStyle = "rgb(0,0,255)";
+        ctx.rect(i, 256-color[2],1,1);
+        ctx.stroke();
+    }
+}
+   
+</script>
+</head>
+<body onload="init(); calibrate(); draw();" onresize="calibrate(); draw();"
+    id="frame"><canvas id="canvas"></canvas></body>
+</html>
+

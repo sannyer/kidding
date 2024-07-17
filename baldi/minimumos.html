@@ -1,0 +1,32 @@
+<html>
+<head>
+<script language="javascript">
+var a = [3,248,48,245286,93569382452,745,2,675,364,63,568,4]; //12 elem
+
+function minOrder(arr) {
+  var i, j, minPos, minVal, x;
+  for (i = 0; i < arr.length - 1; i++){
+    minPos = i;
+    minVal = arr[i];
+    for (j = i + 1; j < arr.length; j++){
+      if (arr[j] < minVal) {
+        minPos = j;
+        minVal = arr[j];
+      }      
+    }
+    if (minPos != i) {
+      x = arr[i];
+      arr[i] = minVal;
+      arr[minPos] = x;
+    }
+  }
+  return arr;
+}
+
+console.log(minOrder(a));
+
+</script>
+</head>
+<body>
+</body>
+</html>
