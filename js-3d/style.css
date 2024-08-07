@@ -1,0 +1,14 @@
+.canvas1 {
+  border: 15px solid red;
+}
+
+.canvas2 {
+  border: 15px solid red;
+}
+
+body {
+  background-color: #f0f0f0;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}

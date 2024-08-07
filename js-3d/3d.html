@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3D Engine Demo - Edge-based Cube</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="TransformMatrix.js"></script>
+    <script src="Engine3D.js"></script>
+  </head>
+  <body>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const border = 15;
+        const e3d = new Engine3D(
+          document.body,
+          window.innerWidth - border * 2,
+          window.innerHeight - border * 2
+        );
+
+        // Define cube vertices
+        const vertices = [
+          { x: -100, y: -100, z: -100 }, // 0
+          { x: 100, y: -100, z: -100 }, // 1
+          { x: 100, y: 100, z: -100 }, // 2
+          { x: -100, y: 100, z: -100 }, // 3
+          { x: -100, y: -100, z: 100 }, // 4
+          { x: 100, y: -100, z: 100 }, // 5
+          { x: 100, y: 100, z: 100 }, // 6
+          { x: -100, y: 100, z: 100 }, // 7
+        ];
+
+        // Define cube edges
+        const edges = [
+          [0, 1],
+          [1, 2],
+          [2, 3],
+          [3, 0], // Front face
+          [4, 5],
+          [5, 6],
+          [6, 7],
+          [7, 4], // Back face
+          [0, 4],
+          [1, 5],
+          [2, 6],
+          [3, 7], // Connecting edges
+        ];
+
+        function drawCube() {
+          edges.forEach((edge) => {
+            const v1 = vertices[edge[0]];
+            const v2 = vertices[edge[1]];
+            e3d.draw3dLine(v1, v2);
+          });
+        }
+
+        let angle = 0,
+          scale;
+        function animate() {
+          e3d.clearCanvas();
+          e3d.resetTransform();
+          e3d.translate(0, 0, 300); // Move the cube away from the camera
+          e3d.rotateY(angle);
+          e3d.rotateX(angle / 2);
+          e3d.rotateZ(angle / 1.5);
+          // pulsate scale with sinus between 0.5x and 1.5x
+          scale = 1 + Math.sin(angle) * 0.5;
+          e3d.scale(scale, scale, scale);
+          // translate with sin/cos around the origo with radius 150 all axes
+          e3d.translate(
+            150 * Math.sin(angle),
+            150 * Math.cos(angle),
+            150 * Math.sin(angle)
+          );
+          e3d.setColorRGB(0, 0, 255); // Set line color to blue
+          drawCube();
+          e3d.swap();
+          angle += 0.1;
+
+          // window.requestAnimationFrame(animate);
+          // Built-in browser function to call animate() at the next frame
+          // this is a more efficient way to animate than using setInterval
+          // because it will only call the function when the browser is ready to draw a new frame
+          // and it will automatically adjust the frame rate to the refresh rate of the screen.
+          requestAnimationFrame(animate);
+        }
+
+        animate();
+      });
+    </script>
+  </body>
+</html>
